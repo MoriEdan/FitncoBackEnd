@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Register",
+  "description": "Register",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 255
+    },
+    "last_name": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 255
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "minLength": 3,
+      "maxLength": 100
+    },
+    "password": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 100
+    },
+    "device": {
+      "type": "string",
+      "minLength": 0
+    },
+    "os": {
+      "type": "string",
+      "enum": [
+        "android",
+        "ios"
+      ]
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "can_walk": {
+      "type": [
+        "integer",
+        "string",
+        "null"
+      ],
+      "enum": [
+        0,
+        1,
+        "0",
+        "1"
+      ]
+    },
+    "weight": {
+      "type": [
+        "number",
+        "string"
+      ]
+    },
+    "height": {
+      "type": [
+        "number",
+        "string"
+      ]
+    },
+    "target": {
+      "type": [
+        "number",
+        "string"
+      ]
+    },
+    "age": {
+      "type": [
+        "integer",
+        "string"
+      ]
+    },
+    "parent": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female"
+      ]
+    },
+    "child": {
+      "type": [
+        "integer",
+        "string",
+        "null"
+      ],
+      "enum": [
+        0,
+        1,
+        "0",
+        "1"
+      ]
+    }
+  },
+  "required": [
+    "name",
+    "last_name",
+    "email",
+    "password",
+    "device",
+    "os",
+    "gender",
+    "timezone"
+  ]
+}

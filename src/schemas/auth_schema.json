@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Auth",
+  "description": "Auth",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "minLength": 3,
+      "maxLength": 100
+    },
+    "password": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 100
+    },
+    "device": {
+      "type": "string",
+      "minLength": 0
+    },
+    "os": {
+      "type": "string",
+      "enum": [
+        "android",
+        "ios"
+      ]
+    }
+  },
+  "required": [
+    "email",
+    "password",
+    "device",
+    "os"
+  ]
+}

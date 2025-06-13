@@ -1,0 +1,180 @@
+version: '2'
+networks:
+  app:
+    driver: bridge
+services:
+  elasticsearch:
+    container_name: elasticsearch
+    hostname: elasticsearch
+    image: 'docker.io/bitnami/elasticsearch:7-debian-10'
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=false
+      - "ES_JAVA_OPTS=-Xms1500m -Xmx1500m"
+      - discovery.type=single-node
+    mem_limit: 2g
+    volumes:
+      - './data/elasticsearch:/bitnami'
+    ports:
+      - '9200:9200'
+      - '9300:9300'
+    networks:
+      app:
+        aliases:
+          - elasticsearch
+    labels:
+      elasticsearch: elasticsearch
+    restart: always
+  kibana:
+    container_name: kibana
+    hostname: kibana
+    image: 'docker.io/bitnami/kibana:7-debian-10'
+    ports:
+      - '5601:5601'
+    volumes:
+      - './data/kibana:/bitnami'
+    depends_on:
+      - elasticsearch
+    networks:
+      app:
+        aliases:
+          - kibana
+    labels:
+      kibana: kibana
+    restart: always
+  postgresql:
+    container_name: postgresql
+    hostname: postgresql
+    image: 'bitnami/postgresql:latest'
+    ports:
+      - '5432:5432'
+    volumes:
+      - './data/postgresql:/bitnami/postgresql'
+    networks:
+      app:
+        aliases:
+          - postgresql
+    environment:
+      - "POSTGRESQL_USERNAME=${POSTGRESQL_USERNAME}"
+      - "POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}"
+      - "POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}"
+      - "POSTGRESQL_POSTGRES_PASSWORD=${POSTGRESQL_POSTGRES_PASSWORD}"
+    labels:
+      postgresql: postgresql
+    restart: always
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    image: 'bitnami/rabbitmq:3.8'
+    ports:
+      - '4369:4369'
+      - '5672:5672'
+      - '25672:25672'
+      - '15672:15672'
+    volumes:
+      - './data/rabbitmq:/bitnami'
+    networks:
+      app:
+        aliases:
+          - rabbitmq
+    environment:
+      - "RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}"
+      - "RABBITMQ_USERNAME=${RABBITMQ_USERNAME}"
+    labels:
+      rabbitmq: rabbitmq
+    restart: always
+  redis:
+    container_name: redis
+    hostname: redis
+    image: 'bitnami/redis:5.0'
+    environment:
+      - "REDIS_PASSWORD=${REDIS_PASSWORD}"
+    ports:
+      - '6379:6379'
+    volumes:
+      - './data/redis:/bitnami/redis/data'
+    networks:
+      app:
+        aliases:
+          - redis
+    labels:
+      redis: redis
+    restart: always
+  api:
+    container_name: api
+    hostname: api
+    tty: true
+    command: 'sh -c ''docker/install-docker.sh && pip install --index-url https://pypi.python.org/simple --upgrade pip && pip install -r requirements.txt && export APP_CONFIG=config/dev.conf && python app.py'''
+    image: 'bitnami/python:3.7'
+    ports:
+      - '2222:2222'
+    volumes:
+      - '..:/app'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    networks:
+      app:
+        aliases:
+          - api
+    labels:
+      api: api
+    restart: always
+  flower:
+    container_name: flower
+    hostname: flower
+    tty: true
+    command: 'sh -c ''pip install --index-url https://pypi.python.org/simple --upgrade pip && pip install --index-url https://pypi.python.org/simple -r requirements.txt && export APP_CONFIG=config/dev.conf && flower -A app.worker --address=0.0.0.0 --port=5555 --basic_auth=my_user:my_password'''
+    image: 'bitnami/python:3.7'
+    ports:
+      - '5555:5555'
+    volumes:
+      - '..:/app'
+    networks:
+      app:
+        aliases:
+          - flower
+    labels:
+      flower: flower
+    restart: always
+  celery:
+    hostname: celery
+    tty: true
+    command: 'sh -c ''pip install --index-url https://pypi.python.org/simple --upgrade pip && pip install --index-url https://pypi.python.org/simple -r requirements.txt && export APP_CONFIG=config/dev.conf && celery worker -A app.worker -Q backoffice --loglevel=info --concurrency=50 -n worker@%h --pidfile=pid/worker_%n.pid --logfile=logs/worker_%n.log'''
+    image: 'bitnami/python:3.7'
+    volumes:
+      - '..:/app'
+    networks:
+      app:
+        aliases:
+          - celery
+    labels:
+      celery: celery
+    restart: always
+  beat:
+    hostname: beat
+    tty: true
+    command: 'sh -c ''pip install --index-url https://pypi.python.org/simple --upgrade pip && pip install --index-url https://pypi.python.org/simple -r requirements.txt && export APP_CONFIG=config/dev.conf && celery -A app.worker beat --loglevel=info --pidfile=pid/worker_beat.pid --logfile=logs/worker_beat.log  --schedule worker.db'''
+    image: 'bitnami/python:3.7'
+    volumes:
+      - '..:/app'
+    networks:
+      app:
+        aliases:
+          - beat
+    labels:
+      beat: beat
+    restart: always
+  nginx:
+    container_name: nginx
+    hostname: nginx
+    image: 'bitnami/nginx:1.16'
+    ports:
+      - '9000:9000'
+    networks:
+      app:
+        aliases:
+          - nginx
+    volumes:
+      - './conf/nginx.conf:/opt/bitnami/nginx/conf/server_blocks/nginx.conf:ro'
+    labels:
+      nginx: nginx
+    restart: always

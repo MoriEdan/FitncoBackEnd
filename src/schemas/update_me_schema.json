@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Auth",
+  "description": "Auth",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 100
+    },
+    "last_name": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 100
+    },
+    "timezone": {
+      "type": "integer",
+      "min": 0
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female"
+      ]
+    },
+    "age": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 100
+    },
+    "height": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 100
+    },
+    "auto_zone": {
+      "type": "string",
+      "default": "0"
+    },
+    "target": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "last_name"
+  ]
+}

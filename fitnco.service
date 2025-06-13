@@ -1,0 +1,16 @@
+[Unit]
+Description=uWSGI instance to serve fitnco
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/opt/fitnco-python
+Environment="PATH=/opt/fitnco-python/venv/bin"
+ExecStart=/opt/fitnco-python/venv/bin/uwsgi --ini fitnco.ini
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,21 @@
+# -*- coding: utf-8 -*-
+import src.models.base_model
+import src.models.breakfast_logs_model
+import src.models.delete_approves_model
+import src.models.diet_images_model
+import src.models.diet_repeats_model
+import src.models.diets_model
+import src.models.dinner_logs_model
+import src.models.errors_model
+import src.models.lunch_logs_model
+import src.models.messages_model
+import src.models.quick_answers_model
+import src.models.sport_model
+import src.models.system_model
+import src.models.timezones_model
+import src.models.user_infos_model
+import src.models.users_model
+import src.models.walking_logs_model
+import src.models.water_model
+import src.models.webview_model
+import src.models.weight_logs_model
